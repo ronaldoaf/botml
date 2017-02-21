@@ -20,11 +20,11 @@ else:
 with open('bot.pickle', 'wb') as handle:
     pickle.dump(bot, handle)
 
-print bot.AOKey
-print bot.AOToken
-print bot.IsLoggedIn()
+print "AOKey=", bot.AOKey
+print "AOToken=", bot.AOToken
+print "Bot logado?=", bot.IsLoggedIn()
 
 #pp.pprint(bot.GetMatches())
 
 for jogo in bot.GetMatches():
-	print jogo['Home'] +' v ' +jogo['Away']
+	print jogo['Home'] +' v ' +jogo['Away'] + " @ " + jogo['LeagueName']
