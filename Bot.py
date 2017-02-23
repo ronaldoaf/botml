@@ -20,12 +20,16 @@ class Bot(object):
     global MARKETTYPE_LIVE
     global MARKETTYPE_TODAY
     global MARKETTYPE_EARLY
+    global ODDSFORMAT_DECIMAL
+
+   
 
     SPORTS_TYPE_SOCCER = 1 # 1 = Futebol. 2 = Basquete, etc...
     MARKETTYPE_LIVE = 0  #0 : Live Market. É esse!
     MARKETTYPE_TODAY = 1 #1 : Today Market
     MARKETTYPE_EARLY = 2 #2 : Early Market
-
+    ODDSFORMAT_DECIMAL ='00'
+    
     def API(self,command, method='GET', params={}, headers={}):
       """
          Método API
@@ -92,30 +96,19 @@ class Bot(object):
     def GetAccountSummary(self):
       return self.API('GetAccountSummary', headers={'AOToken': self.AOToken} )
 
-    def GetLeagues(self):
-      """
-         Método GetLeagues
-         Retorna uma lista com todas as ligas que de futebol que jogos acontecendo no momento
-         
-         Args:
-            Não há parâmetros. Ele meio que já sabe o que fazer.
-         
-      """
-      FIRST_ITEM = 0
-      return self.API('GetLeagues',  params={'sportsType': SPORTS_TYPE_SOCCER, 'marketTypeId': MARKETTYPE_LIVE}, headers={'AOToken': self.AOToken} )['Sports'][FIRST_ITEM]['League']
 
-    def GetMatches(self):
-      """
-         Método GetMatches
-         Retorna a lista com os jogos de futebol ativos no momento.
-         
-         Args:
-            Não há parâmetros. Ele meio que já sabe o que fazer.
-         
-      """
-      FIRST_ITEM = 0
-      return self.API('GetMatches',  params={'sportsType': SPORTS_TYPE_SOCCER, 'marketTypeId': MARKETTYPE_LIVE}, headers={'AOToken': self.AOToken} )['EventSportsTypes'][FIRST_ITEM]['Events']
-
+    def GetFeeds(self):
+	"""
+	 Método GetMatches
+	 Retorna a lista com os jogos de futebol ativos no momento.
+	 
+	 Args:
+	    Não há parâmetros. Ele meio que já sabe o que fazer.
+	 
+	"""
+	FIRST_ITEM = 0
+	return self.API('GetFeeds',  params={'sportsType': SPORTS_TYPE_SOCCER, 'marketTypeId': MARKETTYPE_LIVE, 'oddsFormat': ODDSFORMAT_DECIMAL }, headers={'AOToken': self.AOToken} )['Sports'][FIRST_ITEM]['MatchGames']
+		
     def GetMatchesTotalcorner(self):
         """
          Método GetMatchesTotalcorner
@@ -156,13 +149,14 @@ class Bot(object):
                 
             
         #Remove os matches com 'No. of Corners' e Fantasy Matches que não são o foco do Bot
-        matches=[ match for match in self.GetMatches() if 'No. of Corners' not in match['Home']  and match['LeagueName']!='FANTASY MATCH' ]
+        matches=[ match for match in self.GetFeeds() if 'No. of Corners' not in match['HomeTeam']['Name']  and match['LeagueName']!='FANTASY MATCH' ]
+
 
         #Cada jogo do AsianOdss ao vivo no momento 
-        for i in range(len(matches)):
-                #Ajusta o nome das equipes para ficarem mais proximas do padrão do TotalCorner
-            matches[i]['Home']=normalizaNome(matches[i]['Home'])
-            matches[i]['Away']=normalizaNome(matches[i]['Away'])
+        for i in range(len(matches)):       
+            #Ajusta o nome das equipes para ficarem mais proximas do padrão do TotalCorner
+            matches[i]['Home']=normalizaNome(matches[i]['HomeTeam']['Name'])
+            matches[i]['Away']=normalizaNome(matches[i]['AwayTeam']['Name'])
             
             #Preenche matches[i]['Home_totalcorner'] e matches[i]['Home_totalcorner'] através da comparação da distancia entre strings  
             matches[i]=jogoMaisProximo(matches[i], jogos_por_timestamp[ matches[i]['StartTime'] ] if matches[i]['StartTime'] in jogos_por_timestamp else [] )
@@ -178,6 +172,8 @@ class Bot(object):
                 if (stat['home']==matches[i]['Home_totalcorner'] and stat['away']==matches[i]['Away_totalcorner']): matches[i]['stats']=stat    				 
         return matches  
 
+	
+   
     def __init__(self):
       """
          Método __init__
