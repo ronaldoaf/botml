@@ -7,12 +7,12 @@ class Bot(object):
     """
       
       Atributos: 
-         username: Nome de usu·rio para acessar o WebService
+         username: Nome de usu√°rio para acessar o WebService
          password: Senha para acessar o WebService
       
       Constantes:
-         SPORTS_TYPE_SOCCER: Esporte alvo no caso È o futebol. = 1.
-         MARKETTYPE_LIVE: Mercado alvo È o ao vivo. = 0.
+         SPORTS_TYPE_SOCCER: Esporte alvo no caso √© o futebol. = 1.
+         MARKETTYPE_LIVE: Mercado alvo √© o ao vivo. = 0.
     """
     username='webapiuser40'
     password='b59c5d190b12d5b7fa3b425aa69dcb8d'
@@ -22,20 +22,20 @@ class Bot(object):
     global MARKETTYPE_EARLY
 
     SPORTS_TYPE_SOCCER = 1 # 1 = Futebol. 2 = Basquete, etc...
-    MARKETTYPE_LIVE = 0  #0 : Live Market. … esse!
+    MARKETTYPE_LIVE = 0  #0 : Live Market. √â esse!
     MARKETTYPE_TODAY = 1 #1 : Today Market
     MARKETTYPE_EARLY = 2 #2 : Early Market
 
     def API(self,command, method='GET', params={}, headers={}):
       """
-         MÈtodo API
+         M√©todo API
          Efetua as chamadas para o WebService do site AsianOdds88.
          
          Args:
-            comando: Nome do serviÁo a ser chamado. 'Login', por exemplo.
-            method: Tipo de mÈtodo. 'GET' ou 'POST'.
-            params: Par‚metros necess·rios para chamar o WebService. {'Username': 'usuario', 'Password': '1234'} È um exemplo.
-            headers: Header a ser passado, caso necess·rio. {'AOKey': 'd6c8064de65f13f84a17d3cd0d3d6a96', 'AOToken': '3220042181867839342977241801'} È um exemplo. 
+            comando: Nome do servi√ßo a ser chamado. 'Login', por exemplo.
+            method: Tipo de m√©todo. 'GET' ou 'POST'.
+            params: Par√¢metros necess√°rios para chamar o WebService. {'Username': 'usuario', 'Password': '1234'} √© um exemplo.
+            headers: Header a ser passado, caso necess√°rio. {'AOKey': 'd6c8064de65f13f84a17d3cd0d3d6a96', 'AOToken': '3220042181867839342977241801'} √© um exemplo. 
       """
       api_url='https://webapi.asianodds88.com/AsianOddsService/'
       if method=='GET':  return requests.get(api_url  + command, params=params, headers=headers).json()['Result']
@@ -44,33 +44,33 @@ class Bot(object):
 
     def Login(self):
       """
-         MÈtodo Login
+         M√©todo Login
          Efetua Login no Asianodds88.
          
          Args:
-            N„o h· par‚metros. Ele meio que j· sabe o que fazer.
+            N√£o h√° par√¢metros. Ele meio que j√° sabe o que fazer.
          
       """
       return self.API('Login', params={'Username': self.username, 'Password': self.password} )
 
     def Register(self):
       """
-         MÈtodo Login
-         Se registra no Asianodds88. Deve ser feito em atÈ 60 segundos depois do login.
+         M√©todo Login
+         Se registra no Asianodds88. Deve ser feito em at√© 60 segundos depois do login.
          
          Args:
-            N„o h· par‚metros. Ele meio que j· sabe o que fazer.
+            N√£o h√° par√¢metros. Ele meio que j√° sabe o que fazer.
          
       """
       return self.API('Register', params={'Username': self.username}, headers={'AOKey': self.AOKey, 'AOToken': self.AOToken} )
 
     def LoginAndRegister(self):
         """
-         MÈtodo Login
-         Executar os mÈtodos Login e Register e armazenas os tokens
+         M√©todo Login
+         Executar os m√©todos Login e Register e armazenas os tokens
          
          Args:
-            N„o h· par‚metros. Ele meio que j· sabe o que fazer.
+            N√£o h√° par√¢metros. Ele meio que j√° sabe o que fazer.
          
         """
         login_result=self.Login()
@@ -81,10 +81,10 @@ class Bot(object):
         
     def IsLoggedIn(self):
       """
-         MÈtodo que verifica se o usu·rio est· logado ou n„o no site Asianodds88.
+         M√©todo que verifica se o usu√°rio est√° logado ou n√£o no site Asianodds88.
          
          Args:
-            N„o h· par‚metros. Ele meio que j· sabe o que fazer.
+            N√£o h√° par√¢metros. Ele meio que j√° sabe o que fazer.
          
       """
       return self.API('IsLoggedIn', headers={'AOToken': self.AOToken} )  
@@ -94,11 +94,11 @@ class Bot(object):
 
     def GetLeagues(self):
       """
-         MÈtodo GetLeagues
+         M√©todo GetLeagues
          Retorna uma lista com todas as ligas que de futebol que jogos acontecendo no momento
          
          Args:
-            N„o h· par‚metros. Ele meio que j· sabe o que fazer.
+            N√£o h√° par√¢metros. Ele meio que j√° sabe o que fazer.
          
       """
       FIRST_ITEM = 0
@@ -106,11 +106,11 @@ class Bot(object):
 
     def GetMatches(self):
       """
-         MÈtodo GetMatches
+         M√©todo GetMatches
          Retorna a lista com os jogos de futebol ativos no momento.
          
          Args:
-            N„o h· par‚metros. Ele meio que j· sabe o que fazer.
+            N√£o h√° par√¢metros. Ele meio que j√° sabe o que fazer.
          
       """
       FIRST_ITEM = 0
@@ -118,12 +118,12 @@ class Bot(object):
 
     def GetMatchesTotalcorner(self):
         """
-         MÈtodo GetMatchesTotalcorner
+         M√©todo GetMatchesTotalcorner
          Retorna a lista com os jogos de futebol ativos no momento com correspondente no Totalcorner
-            s„o adicionadas as chaves  'Home_totalcorner', 'Away_totalcorner' e 'stats' (provenientes de http://aposte.me/live)
+            s√£o adicionadas as chaves  'Home_totalcorner', 'Away_totalcorner' e 'stats' (provenientes de http://aposte.me/live)
          
          Args:
-            N„o h· par‚metros. Ele meio que j· sabe o que fazer.
+            N√£o h√° par√¢metros. Ele meio que j√° sabe o que fazer.
          
         """  
         def jogoMaisProximo(jogo, lista_de_jogos):
@@ -142,32 +142,32 @@ class Bot(object):
             return jogo
             
 
-        #FunÁ„o que ajusta o nome da equipe do AsianOdds88 para ficar mais parecida com o padr„o do TotalCorner	
+        #Fun√ß√£o que ajusta o nome da equipe do AsianOdds88 para ficar mais parecida com o padr√£o do TotalCorner	
         def normalizaNome(nome): return nome.replace('(N)','').replace('(W)','Women').replace('(R)','Reserves')
 
 
         #Carrega os jogos do totalcorner que provem de um script do phantomjs que fica o rodando, gerando o arquivo a cada 1 minuto
         with open('jogos_totalcorner.json') as data_file: jogos_totalcorner = json.load(data_file)  
 
-        #Gera um dicionario cujas chaves s„o os distintos timestamps e o valores s„o listas com todos os jogos_totalcorner que comeÁam nesses timestamps
+        #Gera um dicionario cujas chaves s√£o os distintos timestamps e o valores s√£o listas com todos os jogos_totalcorner que come√ßam nesses timestamps
         jogos_por_timestamp={}
         for timestamp in set([jogo['timestamp'] for jogo in  jogos_totalcorner ]):
             jogos_por_timestamp[timestamp]=[jogo for jogo in jogos_totalcorner if jogo['timestamp']==timestamp]
                 
             
-        #Remove os matches com 'No. of Corners' e Fantasy Matches que n„o s„o o foco do Bot
+        #Remove os matches com 'No. of Corners' e Fantasy Matches que n√£o s√£o o foco do Bot
         matches=[ match for match in self.GetMatches() if 'No. of Corners' not in match['Home']  and match['LeagueName']!='FANTASY MATCH' ]
 
         #Cada jogo do AsianOdss ao vivo no momento 
         for i in range(len(matches)):
-                #Ajusta o nome das equipes para ficarem mais proximas do padr„o do TotalCorner
+                #Ajusta o nome das equipes para ficarem mais proximas do padr√£o do TotalCorner
             matches[i]['Home']=normalizaNome(matches[i]['Home'])
             matches[i]['Away']=normalizaNome(matches[i]['Away'])
             
-            #Preenche matches[i]['Home_totalcorner'] e matches[i]['Home_totalcorner'] atravÈs da comparaÁ„o da distancia entre strings  
+            #Preenche matches[i]['Home_totalcorner'] e matches[i]['Home_totalcorner'] atrav√©s da compara√ß√£o da distancia entre strings  
             matches[i]=jogoMaisProximo(matches[i], jogos_por_timestamp[ matches[i]['StartTime'] ] if matches[i]['StartTime'] in jogos_por_timestamp else [] )
 
-        #Remove os jogos que que n„o houve n„o encontrados no Totalcorenr
+        #Remove os jogos que que n√£o houve n√£o encontrados no Totalcorenr
         matches= [match for match in matches if match['Home_totalcorner']!='' ] 
 
         #Adiciona as estatisticas provenientes do aposte.me
@@ -180,13 +180,13 @@ class Bot(object):
 
     def __init__(self):
       """
-         MÈtodo __init__
-         Inicializa o objeto. … chamado quando o objeto È criado.
+         M√©todo __init__
+         Inicializa o objeto. √â chamado quando o objeto √© criado.
          
-         Assim que o objeto È criado, o login È efetuado. E o AOKey e AOToken s„o guardados. E depois ele se registra.
+         Assim que o objeto √© criado, o login √© efetuado. E o AOKey e AOToken s√£o guardados. E depois ele se registra.
          
          Args:
-            N„o h· par‚metros. Ele meio que j· sabe o que fazer.
-         
+            N√£o h√° par√¢metros. Ele meio que j√° sabe o que fazer.
+          
       """
       self.LoginAndRegister()
