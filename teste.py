@@ -34,3 +34,5 @@ class TestKickOffBot(unittest.TestCase):
       self.assertTrue( kob.doPlaceBet() )
 if __name__ == '__main__':
    unittest.main()
+
+print 'teste commmit'
