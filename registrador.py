@@ -21,7 +21,7 @@ else:
 with open('bot.pickle', 'wb') as handle:
     pickle.dump(bot, handle)
 
-print "AOKey=", bot.AOKey
+print "AOKey= ", bot.AOKey
 print "AOToken=", bot.AOToken
 print "Bot logado?=", bot.IsLoggedIn()
 

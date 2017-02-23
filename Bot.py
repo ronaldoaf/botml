@@ -6,7 +6,7 @@ from distance import nlevenshtein as distance
 class Bot(object):
     """
       
-      Atributos:
+      Atributos: 
          username: Nome de usuário para acessar o WebService
          password: Senha para acessar o WebService
       
