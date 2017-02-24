@@ -147,7 +147,6 @@ class Bot(object):
       for timestamp in set([jogo['timestamp'] for jogo in  jogos_totalcorner ]):
          jogos_por_timestamp[timestamp]=[jogo for jogo in jogos_totalcorner if jogo['timestamp']==timestamp]
             
-<<<<<<< HEAD
             #Preenche matches[i]['Home_totalcorner'] e matches[i]['Home_totalcorner'] através da comparação da distancia entre strings  
             matches[i]=jogoMaisProximo(matches[i], jogos_por_timestamp[ matches[i]['StartTime'] ] if matches[i]['StartTime'] in jogos_por_timestamp else [] )
 
@@ -228,12 +227,9 @@ class Bot(object):
       """
          Método __init__
          Inicializa o objeto. É chamado quando o objeto é criado.
-=======
->>>>>>> origin/master
-         
+      """
       #Remove os matches com 'No. of Corners' e Fantasy Matches que não são o foco do Bot
       matches=[ match for match in self.GetFeeds() if 'No. of Corners' not in match['HomeTeam']['Name']  and match['LeagueName']!='FANTASY MATCH' ]
-
 
       #Cada jogo do AsianOdss ao vivo no momento 
       for i in range(len(matches)):      
@@ -254,7 +250,6 @@ class Bot(object):
          for stat in stats:	      
             if (stat['home']==matches[i]['Home_totalcorner'] and stat['away']==matches[i]['Away_totalcorner']): matches[i]['stats']=stat   				 
       return matches  
-
 	
    
    def __init__(self):
