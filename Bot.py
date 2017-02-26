@@ -15,7 +15,12 @@ class Jogo(object):
          feed é um dicionáro com o dados provenientes do método Bot.GetFeeds() e por posteriormente alterado por Bot.GetMatchesTotalcorner()   
       """
    def Update(self, feed):
-      pass
+         
+      self.metade=1 if feed['InGameMinutes'] <120 else 2
+      self.tempo=feed['InGameMinutes'] - self.metade*60
+      self.ativo=feed['IsActive']
+      #self.AH_home=feed['HalfTimeHdpfeed']['Handicap']self.metade
+      
 
 class Bot(object):
    """
@@ -261,3 +266,4 @@ class Bot(object):
         
      """
      self.LoginAndRegister()
+     self.Jogos=[Jogo(feed) for feed in self.GetMatchesTotalcorner()]
