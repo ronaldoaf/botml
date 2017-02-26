@@ -14,12 +14,24 @@ class Jogo(object):
       Args:
          feed é um dicionáro com o dados provenientes do método Bot.GetFeeds() e por posteriormente alterado por Bot.GetMatchesTotalcorner()   
       """
+      self.Update(feed)
+      
+      
+   
    def Update(self, feed):
-         
-      self.metade=1 if feed['InGameMinutes'] <120 else 2
-      self.tempo=feed['InGameMinutes'] - self.metade*60
+      
+
+      if feed['InGameMinutes']==60: self.etapa='HT'
+      elif feed['InGameMinutes']>120: self.etapa='2H'
+      elif feed['InGameMinutes']>60: self.etapa='1H'
+      else: self.etapa='0'
+      
+      self.tempo=feed['InGameMinutes']-60 if self.etapa=='1H' else (45+feed['InGameMinutes']-120 if self.etapa=='2H' else -1)
       self.ativo=feed['IsActive']
-      #self.AH_home=feed['HalfTimeHdpfeed']['Handicap']self.metade
+      self.home=feed['HomeTeam']['Name']
+      self.InGameMinutes=feed['InGameMinutes']
+      
+      #self.AH_home=feed['HalfTimeHdpfeed']['Handicap'] 
       
 
 class Bot(object):
@@ -50,7 +62,7 @@ class Bot(object):
    ODDSFORMAT_DECIMAL ='00'
    
    def API(self,command, method='GET', params={}, headers={}):
-      """
+     """
        Método API
        Efetua as chamadas para o WebService do site AsianOdds88.
        
@@ -59,12 +71,12 @@ class Bot(object):
          method: Tipo de método. 'GET' ou 'POST'.
          params: Parâmetros necessários para chamar o WebService. {'Username': 'usuario', 'Password': '1234'} é um exemplo.
          headers: Header a ser passado, caso necessário. {'AOKey': 'd6c8064de65f13f84a17d3cd0d3d6a96', 'AOToken': '3220042181867839342977241801'} é um exemplo. 
-      """
-      api_url='https://webapi.asianodds88.com/AsianOddsService/'
-      if method=='GET':  return requests.get(api_url  + command, params=params, headers=headers).json()['Result']
-      if method=='POST': return requests.post(api_url + command, data=params,   headers=headers).json()['Result']
+     """
+     api_url='https://webapi.asianodds88.com/AsianOddsService/'
+     if method=='GET':  return requests.get(api_url  + command, params=params, headers=headers).json()['Result']
+     if method=='POST': return requests.post(api_url + command, data=params,   headers=headers).json()['Result']
      
-   
+
    def Login(self):
      """
        Método Login
@@ -113,21 +125,21 @@ class Bot(object):
      return self.API('IsLoggedIn', headers={'AOToken': self.AOToken} )  
 
    def GetAccountSummary(self):
-      return self.API('GetAccountSummary', headers={'AOToken': self.AOToken} )
+     return self.API('GetAccountSummary', headers={'AOToken': self.AOToken} )
 
 
    def GetFeeds(self):
-      """
-      Método GetMatches
-      Retorna a lista com os jogos de futebol ativos no momento.
-   
-      Args:
-      Não há parâmetros. Ele meio que já sabe o que fazer.
-   
-      """
-      FIRST_ITEM = 0
-      return self.API('GetFeeds',  params={'sportsType': SPORTS_TYPE_SOCCER, 'marketTypeId': MARKETTYPE_LIVE, 'oddsFormat': ODDSFORMAT_DECIMAL }, headers={'AOToken': self.AOToken} )['Sports'][FIRST_ITEM]['MatchGames']
-      
+	"""
+	 Método GetMatches
+	 Retorna a lista com os jogos de futebol ativos no momento.
+	 
+	 Args:
+	   Não há parâmetros. Ele meio que já sabe o que fazer.
+	 
+	"""
+	FIRST_ITEM = 0
+	return self.API('GetFeeds',  params={'sportsType': SPORTS_TYPE_SOCCER, 'marketTypeId': MARKETTYPE_LIVE, 'oddsFormat': ODDSFORMAT_DECIMAL }, headers={'AOToken': self.AOToken} )['Sports'][FIRST_ITEM]['MatchGames']
+		
    def GetMatchesTotalcorner(self):
       """
        Método GetMatchesTotalcorner
@@ -189,81 +201,9 @@ class Bot(object):
          matches[i]['stats']={}
          for stat in stats:	      
             if (stat['home']==matches[i]['Home_totalcorner'] and stat['away']==matches[i]['Away_totalcorner']): matches[i]['stats']=stat   				 
-      return matches    
-
-   def EvaluateGame(self, tempo, ind, ind2, gH, AH_Home):
-      #Apostar em Home
-      #if ( ( jogo.ind>=3.50 ) &&  ( jogo.ind2>=2.5) && ( jogo_selecionado.AH_Home==-0.5) && ( jogo.gH<=1) && ( (primeiroTempo() && (jogo_selecionado.tempo>=25)) || (segundoTempo() && (jogo_selecionado.tempo>=70)) ) ) return true
-      #if ( ( jogo.ind>=2.50 ) &&  ( jogo.ind2>=1.50) &&    ( jogo_selecionado.AH_Home==-0.25)  &&  ( jogo.gH==0.0) &&  ( (primeiroTempo() && (jogo_selecionado.tempo>=25)) ||  (segundoTempo() && (jogo_selecionado.tempo>=70))) ) return true
-      #if ( ( jogo.ind>=2.00 ) &&  ( jogo.ind2>=1.00) &&    ( jogo_selecionado.AH_Home>=0)  &&  ( jogo.gH==0.0) &&  ( (primeiroTempo() && (jogo_selecionado.tempo>=25)) ||  (segundoTempo() && (jogo_selecionado.tempo>=70))    ) ) return true
-      
-      #Apostar em away
-      #if ( ( jogo.ind<=-3.50 ) &&  ( jogo.ind2<=-2.5) &&    ( jogo_selecionado.AH_Away==-0.5)  &&  ( jogo.gA<=1)  &&  ( (primeiroTempo() && (jogo_selecionado.tempo>=25)) ||  (segundoTempo() && (jogo_selecionado.tempo>=70))    ) ) return true
-      #if ( ( jogo.ind<=-2.50 ) &&  ( jogo.ind2<=-1.50) &&    ( jogo_selecionado.AH_Away==-0.25)  &&  ( jogo.gA==0.0)  &&  ( (primeiroTempo() && (jogo_selecionado.tempo>=25)) ||  (segundoTempo() && (jogo_selecionado.tempo>=70))    ) ) return true
-      #if ( ( jogo.ind<=-2.00 ) &&  ( jogo.ind2<=-1.00) &&    ( jogo_selecionado.AH_Away>=0)  &&  ( jogo.gA==0.0) &&  ( (primeiroTempo() && (jogo_selecionado.tempo>=25)) ||  (segundoTempo() && (jogo_selecionado.tempo>=70))    ) ) return true
-      
-      return false
-        
-   def PlaceBet(self, oddsName, bookieOdds, amount):
-      """
-      Método que faz a aposta.
-      
-      Args:
-            oddsName: pode ser 'AwayOdds', 'HomeOdds', ou 'DrawOdds' em mercados 1x2.
-            Qual é o tipo de odds a ser apostado "ISN:-0.84,SBO:-0.75,.."
-            amount: quantidade a ser apostada.
-         
-      """
-      IS_FULL_TIME = 1
-      IS_NOT_FULL_TIME = 0
-      GAME_TYPE_HANDCAP = "H" #AsianHandicap
-      GAME_TYPE_OVERUNDER = "O" #OverUnder
-      GAME_TYPE_1X2GAME = "X" #1X2game
-      CHANGE_ODDS_YES = 1 #meaning that lower odds will be automatically accepted
-      CHANGE_ODDS_NO = 0 #reject if the odds became lower
-      return self.API('PlaceBet',
-                     params={
-                              "PlaceBetId":"{uniqueID (optional)}",
-                              "GameId":"{gameId from feed}",
-                              "GameType":GAME_TYPE_HANDCAP,
-                              "IsFullTime":IS_FULL_TIME,
-                              "MarketTypeId":MARKETTYPE_LIVE,
-                              "OddsFormat":ODDSFORMAT_DECIMAL,
-                              "OddsName":oddsName,
-                              "SportsType":SPORTS_TYPE_SOCCER,
-                              "AcceptChangedOdds":CHANGE_ODDS_YES,
-                              "BookieOdds":bookieOdds,
-                              "Amount":amount}
-                     ,headers={'AOToken': self.AOToken} ) 
-        
-   def __init__(self):
-      """
-         Método __init__
-         Inicializa o objeto. É chamado quando o objeto é criado.
-      """
-      #Remove os matches com 'No. of Corners' e Fantasy Matches que não são o foco do Bot
-      matches=[ match for match in self.GetFeeds() if 'No. of Corners' not in match['HomeTeam']['Name']  and match['LeagueName']!='FANTASY MATCH' ]
-
-      #Cada jogo do AsianOdss ao vivo no momento 
-      for i in range(len(matches)):      
-         #Ajusta o nome das equipes para ficarem mais proximas do padrão do TotalCorner
-         matches[i]['Home']=normalizaNome(matches[i]['HomeTeam']['Name'])
-         matches[i]['Away']=normalizaNome(matches[i]['AwayTeam']['Name'])
-         
-         #Preenche matches[i]['Home_totalcorner'] e matches[i]['Home_totalcorner'] através da comparação da distancia entre strings  
-         matches[i]=jogoMaisProximo(matches[i], jogos_por_timestamp[ matches[i]['StartTime'] ] if matches[i]['StartTime'] in jogos_por_timestamp else [] )
-
-      #Remove os jogos que que não houve não encontrados no Totalcorenr
-      matches= [match for match in matches if match['Home_totalcorner']!='' ] 
-
-      #Adiciona as estatisticas provenientes do aposte.me
-      stats=requests.get('http://aposte.me/live/stats.php').json() 
-      for i in range(len( matches )):
-         matches[i]['stats']={}
-         for stat in stats:        
-            if (stat['home']==matches[i]['Home_totalcorner'] and stat['away']==matches[i]['Away_totalcorner']): matches[i]['stats']=stat              
       return matches  
-   
+
+	
    
    def __init__(self):
      """
