@@ -149,12 +149,12 @@ class Bot(object):
                j_atual=j
                min_distance=dis_atual
          if j_atual != {}: 
-            jogo['Home_totalcorner']=j_atual['home']   
+            jogo['Home_totalcorner']=j_atual['home']	
             jogo['Away_totalcorner']=j_atual['away']
          return jogo
          
 
-      #Função que ajusta o nome da equipe do AsianOdds88 para ficar mais parecida com o padrão do TotalCorner   
+      #Função que ajusta o nome da equipe do AsianOdds88 para ficar mais parecida com o padrão do TotalCorner	
       def normalizaNome(nome): return nome.replace('(N)','').replace('(W)','Women').replace('(R)','Reserves')
 
 
@@ -166,19 +166,30 @@ class Bot(object):
       for timestamp in set([jogo['timestamp'] for jogo in  jogos_totalcorner ]):
          jogos_por_timestamp[timestamp]=[jogo for jogo in jogos_totalcorner if jogo['timestamp']==timestamp]
             
+         
+      #Remove os matches com 'No. of Corners' e Fantasy Matches que não são o foco do Bot
+      matches=[ match for match in self.GetFeeds() if 'No. of Corners' not in match['HomeTeam']['Name']  and match['LeagueName']!='FANTASY MATCH' ]
+
+
+      #Cada jogo do AsianOdss ao vivo no momento 
+      for i in range(len(matches)):      
+         #Ajusta o nome das equipes para ficarem mais proximas do padrão do TotalCorner
+         matches[i]['Home']=normalizaNome(matches[i]['HomeTeam']['Name'])
+         matches[i]['Away']=normalizaNome(matches[i]['AwayTeam']['Name'])
+         
          #Preenche matches[i]['Home_totalcorner'] e matches[i]['Home_totalcorner'] através da comparação da distancia entre strings  
          matches[i]=jogoMaisProximo(matches[i], jogos_por_timestamp[ matches[i]['StartTime'] ] if matches[i]['StartTime'] in jogos_por_timestamp else [] )
 
-         #Remove os jogos que que não houve não encontrados no Totalcorenr
-         matches= [match for match in matches if match['Home_totalcorner']!='' ] 
+      #Remove os jogos que que não houve não encontrados no Totalcorenr
+      matches= [match for match in matches if match['Home_totalcorner']!='' ] 
 
-        #Adiciona as estatisticas provenientes do aposte.me
-         stats=requests.get('http://aposte.me/live/stats.php').json() 
-         for i in range(len( matches )):
-            matches[i]['stats']={}
-            for stat in stats:          
-               if (stat['home']==matches[i]['Home_totalcorner'] and stat['away']==matches[i]['Away_totalcorner']): matches[i]['stats']=stat               
-         return matches  
+      #Adiciona as estatisticas provenientes do aposte.me
+      stats=requests.get('http://aposte.me/live/stats.php').json() 
+      for i in range(len( matches )):
+         matches[i]['stats']={}
+         for stat in stats:	      
+            if (stat['home']==matches[i]['Home_totalcorner'] and stat['away']==matches[i]['Away_totalcorner']): matches[i]['stats']=stat   				 
+      return matches    
 
    def EvaluateGame(self, tempo, ind, ind2, gH, AH_Home):
       #Apostar em Home
