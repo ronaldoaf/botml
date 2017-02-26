@@ -207,7 +207,7 @@ class Bot(object):
    
    def __init__(self):
      """
-       Método __init__
+       Método __init__ 
        Inicializa o objeto. É chamado quando o objeto é criado.
        
        Assim que o objeto é criado, o login é efetuado. E o AOKey e AOToken são guardados. E depois ele se registra.
