@@ -69,14 +69,14 @@ class Jogo(object):
       def segundoTempo(): return self.etapa=='2H'
       
       #Apostar em Home
-      if ( ( self.ind>=3.50 ) and  ( self.ind2>=2.5) and ( self.AH_Home==-0.5) and ( self.gH<=1) and ( (primeiroTempo() and (self.tempo>=25)) or (segundoTempo() and (self.tempo>=70)) ) ): return true
-      if ( ( self.ind>=2.50 ) and  ( self.ind2>=1.50) and ( self.AH_Home==-0.25)  and  ( self.gH==0.0) and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))) ): return true
-      if ( ( self.ind>=2.00 ) and  ( self.ind2>=1.00) and ( self.AH_Home>=0)  and  ( self.gH==0.0) and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return true
+      if ( ( self.ind>=3.50 ) and  ( self.ind2>=2.5) and ( self.AH_Home==-0.5) and ( self.gH<=1) and ( (primeiroTempo() and (self.tempo>=25)) or (segundoTempo() and (self.tempo>=70)) ) ): return True
+      if ( ( self.ind>=2.50 ) and  ( self.ind2>=1.50) and ( self.AH_Home==-0.25)  and  ( self.gH==0.0) and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))) ): return True
+      if ( ( self.ind>=2.00 ) and  ( self.ind2>=1.00) and ( self.AH_Home>=0)  and  ( self.gH==0.0) and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return True
       
       #Apostar em away
-      if ( ( self.ind<=-3.50 ) and  ( self.ind2<=-2.5) and ( self.AH_Away==-0.5)  and  ( self.gA<=1)  and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return true
-      if ( ( self.ind<=-2.50 ) and  ( self.ind2<=-1.50) and ( self.AH_Away==-0.25)  and  ( self.gA==0.0)  and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return true
-      if ( ( self.ind<=-2.00 ) and  ( self.ind2<=-1.00) and ( self.AH_Away>=0)  and  ( self.gA==0.0) and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return true
+      if ( ( self.ind<=-3.50 ) and  ( self.ind2<=-2.5) and ( self.AH_Away==-0.5)  and  ( self.gA<=1)  and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return True
+      if ( ( self.ind<=-2.50 ) and  ( self.ind2<=-1.50) and ( self.AH_Away==-0.25)  and  ( self.gA==0.0)  and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return True
+      if ( ( self.ind<=-2.00 ) and  ( self.ind2<=-1.00) and ( self.AH_Away>=0)  and  ( self.gA==0.0) and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return True
       
       return false
 
