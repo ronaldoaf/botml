@@ -19,20 +19,40 @@ class Jogo(object):
       
    
    def Update(self, feed):
-      
+      #Converte o handicap para decimaol 0.25. Exemplo:   0-0.5 para -0.25
+      def handicapStrToFloat(h_str, favorito):
+         arr=h_str.split('-') 
+         if arr[0]=='': return ''
+         if len(arr)==1: arr+=arr   
+         arr[0]=float(arr[0])
+         arr[1]=float(arr[1])
+         return (-1 if favorito else 1)*sum(arr)/2.0
 
       if feed['InGameMinutes']==60: self.etapa='HT'
       elif feed['InGameMinutes']>120: self.etapa='2H'
       elif feed['InGameMinutes']>60: self.etapa='1H'
       else: self.etapa='0'
       
+      self.feed=feed
+      
+      if (feed['stats']=={}) or (self.etapa=='HT') or (self.etapa=='0'): return None
+      
       self.tempo=feed['InGameMinutes']-60 if self.etapa=='1H' else (45+feed['InGameMinutes']-120 if self.etapa=='2H' else -1)
       self.ativo=feed['IsActive']
       self.home=feed['HomeTeam']['Name']
-      self.InGameMinutes=feed['InGameMinutes']
+      self.away=feed['AwayTeam']['Name'] 
       
-      #self.AH_home=feed['HalfTimeHdpfeed']['Handicap'] 
+      self.AH_home=handicapStrToFloat(feed['HalfTimeHdp']['Handicap'], feed['Favoured']==1) if self.etapa=='1H' else handicapStrToFloat(feed['FullTimeHdp']['Handicap'], feed['Favoured']==1) 
+      self.AH_away=handicapStrToFloat(feed['HalfTimeHdp']['Handicap'], feed['Favoured']==2) if self.etapa=='1H' else handicapStrToFloat(feed['FullTimeHdp']['Handicap'], feed['Favoured']==2) 
+  
+      if self.AH_home=='': return None
       
+      self.ind=feed['stats']['ind']
+      self.ind2=feed['stats']['ind2']
+      self.gH=feed['stats']['gH']
+      self.gA=feed['stats']['gA']
+
+
 
 class Bot(object):
    """
@@ -129,17 +149,17 @@ class Bot(object):
 
 
    def GetFeeds(self):
-	"""
-	 Método GetMatches
-	 Retorna a lista com os jogos de futebol ativos no momento.
-	 
-	 Args:
-	   Não há parâmetros. Ele meio que já sabe o que fazer.
-	 
-	"""
-	FIRST_ITEM = 0
-	return self.API('GetFeeds',  params={'sportsType': SPORTS_TYPE_SOCCER, 'marketTypeId': MARKETTYPE_LIVE, 'oddsFormat': ODDSFORMAT_DECIMAL }, headers={'AOToken': self.AOToken} )['Sports'][FIRST_ITEM]['MatchGames']
-		
+      """
+       Método GetMatches
+       Retorna a lista com os jogos de futebol ativos no momento.
+       
+       Args:
+         Não há parâmetros. Ele meio que já sabe o que fazer.
+       
+      """
+      FIRST_ITEM = 0
+      return self.API('GetFeeds',  params={'sportsType': SPORTS_TYPE_SOCCER, 'marketTypeId': MARKETTYPE_LIVE, 'oddsFormat': ODDSFORMAT_DECIMAL }, headers={'AOToken': self.AOToken} )['Sports'][FIRST_ITEM]['MatchGames']
+      
    def GetMatchesTotalcorner(self):
       """
        Método GetMatchesTotalcorner
@@ -163,12 +183,11 @@ class Bot(object):
          if j_atual != {}: 
             jogo['Home_totalcorner']=j_atual['home']	
             jogo['Away_totalcorner']=j_atual['away']
-         return jogo
-         
+         return jogo        
 
-      #Função que ajusta o nome da equipe do AsianOdds88 para ficar mais parecida com o padrão do TotalCorner	
+      #Função que ajusta o nome da equipe do AsianOdds88 para ficar mais parecida com o padrão do TotalCorner
       def normalizaNome(nome): return nome.replace('(N)','').replace('(W)','Women').replace('(R)','Reserves')
-
+      
 
       #Carrega os jogos do totalcorner que provem de um script do phantomjs que fica o rodando, gerando o arquivo a cada 1 minuto
       with open('jogos_totalcorner.json') as data_file: jogos_totalcorner = json.load(data_file)  
@@ -203,11 +222,14 @@ class Bot(object):
             if (stat['home']==matches[i]['Home_totalcorner'] and stat['away']==matches[i]['Away_totalcorner']): matches[i]['stats']=stat   				 
       return matches  
 
-	
+   def UpateJogos(self):
+      Jogos=[Jogo(feed) for feed in self.GetMatchesTotalcorner()]
+      Jogos=[jogo for jogo in Jogos if hasattr(jogo, 'tempo') ]
+      self.Jogos=[jogo for jogo in Jogos if jogo.AH_home!='' ]
    
    def __init__(self):
-     """
-       Método __init__ 
+      """
+       Método __init__
        Inicializa o objeto. É chamado quando o objeto é criado.
        
        Assim que o objeto é criado, o login é efetuado. E o AOKey e AOToken são guardados. E depois ele se registra.
@@ -215,6 +237,8 @@ class Bot(object):
        Args:
          Não há parâmetros. Ele meio que já sabe o que fazer.
         
-     """
-     self.LoginAndRegister()
-     self.Jogos=[Jogo(feed) for feed in self.GetMatchesTotalcorner()]
+      """
+
+      self.LoginAndRegister()
+
+   self.UpateJogos()
