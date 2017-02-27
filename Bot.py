@@ -52,7 +52,33 @@ class Jogo(object):
       self.gH=feed['stats']['gH']
       self.gA=feed['stats']['gA']
 
-
+   def EvaluateGame(self):
+      """
+         Método para avaliar se uma aposta será feita ou não.
+         
+         args:
+            
+         return:
+            true quando deve-se apostar
+            false quando nao se deve apostar
+            
+         TODO: mudar parâmetros para um objeto do tipo Jogo. 
+               Ao invés de retornar true ou false, chamar o método da aposta.
+      """
+      def primeroTempo(): return self.etapa=='1H'
+      def segundoTempo(): return self.etapa=='2H'
+      
+      #Apostar em Home
+      if ( ( self.ind>=3.50 ) and  ( self.ind2>=2.5) and ( self.AH_Home==-0.5) and ( self.gH<=1) and ( (primeiroTempo() and (self.tempo>=25)) or (segundoTempo() and (self.tempo>=70)) ) ): return true
+      if ( ( self.ind>=2.50 ) and  ( self.ind2>=1.50) and ( self.AH_Home==-0.25)  and  ( self.gH==0.0) and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))) ): return true
+      if ( ( self.ind>=2.00 ) and  ( self.ind2>=1.00) and ( self.AH_Home>=0)  and  ( self.gH==0.0) and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return true
+      
+      #Apostar em away
+      if ( ( self.ind<=-3.50 ) and  ( self.ind2<=-2.5) and ( self.AH_Away==-0.5)  and  ( self.gA<=1)  and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return true
+      if ( ( self.ind<=-2.50 ) and  ( self.ind2<=-1.50) and ( self.AH_Away==-0.25)  and  ( self.gA==0.0)  and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return true
+      if ( ( self.ind<=-2.00 ) and  ( self.ind2<=-1.00) and ( self.AH_Away>=0)  and  ( self.gA==0.0) and  ( (primeiroTempo() and (self.tempo>=25)) or  (segundoTempo() and (self.tempo>=70))    ) ): return true
+      
+      return false
 
 class Bot(object):
    """
