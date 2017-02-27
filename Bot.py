@@ -241,4 +241,4 @@ class Bot(object):
 
       self.LoginAndRegister()
 
-   self.UpateJogos()
+      self.UpateJogos()
