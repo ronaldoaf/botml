@@ -28,12 +28,14 @@ class Jogo(object):
          arr[1]=float(arr[1])
          return (-1 if favorito else 1)*sum(arr)/2.0
 
+      self.GameId=feed['GameId']
+      
       if feed['InGameMinutes']==60: self.etapa='HT'
       elif feed['InGameMinutes']>120: self.etapa='2H'
       elif feed['InGameMinutes']>60: self.etapa='1H'
       else: self.etapa='0'
       
-      self.feed=feed
+      #self.feed=feed
       
       if (feed['stats']=={}) or (self.etapa=='HT') or (self.etapa=='0'): return None
       
@@ -98,6 +100,13 @@ class Bot(object):
    global MARKETTYPE_TODAY
    global MARKETTYPE_EARLY
    global ODDSFORMAT_DECIMAL
+   global IS_FULL_TIME
+   global IS_NOT_FULL_TIME
+   global GAME_TYPE_HANDCAP
+   global GAME_TYPE_OVERUNDER
+   global GAME_TYPE_1X2GAME
+   global CHANGE_ODDS_YES 
+   global CHANGE_ODDS_NO
 
    
 
@@ -106,6 +115,14 @@ class Bot(object):
    MARKETTYPE_TODAY = 1 #1 : Today Market
    MARKETTYPE_EARLY = 2 #2 : Early Market
    ODDSFORMAT_DECIMAL ='00'
+   IS_FULL_TIME = 1
+   IS_NOT_FULL_TIME = 0
+   GAME_TYPE_HANDCAP = "H" #AsianHandicap
+   GAME_TYPE_OVERUNDER = "O" #OverUnder
+   GAME_TYPE_1X2GAME = "X" #1X2game
+   CHANGE_ODDS_YES = 1 #meaning that lower odds will be automatically accepted
+   CHANGE_ODDS_NO = 0 #reject if the odds became lower
+   
    
    def API(self,command, method='GET', params={}, headers={}):
      """
@@ -119,10 +136,10 @@ class Bot(object):
          headers: Header a ser passado, caso necessário. {'AOKey': 'd6c8064de65f13f84a17d3cd0d3d6a96', 'AOToken': '3220042181867839342977241801'} é um exemplo. 
      """
      api_url='https://webapi.asianodds88.com/AsianOddsService/'
-     if method=='GET':  return requests.get(api_url  + command, params=params, headers=headers).json()['Result']
-     if method=='POST': return requests.post(api_url + command, data=params,   headers=headers).json()['Result']
+     if method=='GET':  request_result=requests.get(api_url  + command, params=params, headers=headers).json()
+     if method=='POST': request_result=requests.post(api_url + command, json=params,   headers=headers).json()
+     return request_result['Result'] if  'Result' in request_result else request_result
      
-
    def Login(self):
      """
        Método Login
@@ -253,6 +270,52 @@ class Bot(object):
       Jogos=[jogo for jogo in Jogos if hasattr(jogo, 'tempo') ]
       self.Jogos=[jogo for jogo in Jogos if jogo.AH_home!='' ]
    
+   
+   
+   
+   def GetBets(self):
+      return self.API('GetBets',headers={'AOToken': self.AOToken} )  
+   
+   def PlaceBet(self, GameId, GameType, IsFullTime, MarketTypeId, oddsName, AcceptChangedOdds, amount):
+      """
+      Método que faz a aposta.
+      
+      Args:
+            oddsName: pode ser 'AwayOdds', 'HomeOdds', ou 'DrawOdds' em mercados 1x2.
+            Qual é o tipo de odds a ser apostado "ISN:-0.84,SBO:-0.75,.."
+            amount: quantidade a ser apostada.
+         
+      """
+
+      return self.API('PlaceBet',  params=	{
+                                    #"PlaceBetId":"{uniqueID (optional)}", #Não precisa passar
+                                    "GameId": GameId,
+                                    "GameType": GameType,
+                                    "IsFullTime":IsFullTime,
+                                    'MarketTypeId':MarketTypeId,
+                                    "OddsFormat": ODDSFORMAT_DECIMAL, #optional parameter
+                                    "OddsName":oddsName,
+                                    "SportsType":SPORTS_TYPE_SOCCER,
+                                    "AcceptChangedOdds":CHANGE_ODDS_YES,
+                                    #"BookieOdds":bookieOdds,    #Para todos os bookies não precisa passar o paremtro
+                                    "Amount":amount}
+      , method='POST'                              
+      , headers={'AOToken': self.AOToken} )   
+   
+   def ApostaEmHandicap(self, jogo, selecao):
+      """
+      Método que faz a aposta no Asian Handicap Live de acordo com a seleção
+         selecao: 1 aposta no home
+         selecao: 2 aposta no away
+      
+      Args:
+            jogo é objeto do tipo Jogoo
+
+            amount: quantidade a ser apostada.
+            
+      """
+      return self.PlaceBet(jogo.GameId,GAME_TYPE_HANDCAP, IS_FULL_TIME if jogo.etapa=='2H' else IS_NOT_FULL_TIME, MARKETTYPE_LIVE, 'FullTimeHdp' if  jogo.etapa=='2H' else 'HalfTimeHdp', CHANGE_ODDS_YES, 5.00   )
+      
    def __init__(self):
       """
        Método __init__
