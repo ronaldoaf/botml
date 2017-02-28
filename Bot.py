@@ -46,7 +46,9 @@ class Jogo(object):
       
       self.AH_home=handicapStrToFloat(feed['HalfTimeHdp']['Handicap'], feed['Favoured']==1) if self.etapa=='1H' else handicapStrToFloat(feed['FullTimeHdp']['Handicap'], feed['Favoured']==1) 
       self.AH_away=handicapStrToFloat(feed['HalfTimeHdp']['Handicap'], feed['Favoured']==2) if self.etapa=='1H' else handicapStrToFloat(feed['FullTimeHdp']['Handicap'], feed['Favoured']==2) 
-  
+      
+      self.BookieOdds_BEST=(feed['HalfTimeHdp']['BookieOdds'] if self.etapa=='1H' else feed['FullTimeHdp']['BookieOdds']).split(';')[-1].replace(' ',':').replace('BEST=','')
+      #self.BookieOdds_home=
       if self.AH_home=='': return None
       
       self.ind=feed['stats']['ind']
@@ -276,7 +278,10 @@ class Bot(object):
    def GetBets(self):
       return self.API('GetBets',headers={'AOToken': self.AOToken} )  
    
-   def PlaceBet(self, GameId, GameType, IsFullTime, MarketTypeId, oddsName, AcceptChangedOdds, amount):
+   
+   
+   #{u'Message': u'Bet has not been placed as an error occured.  Note : You must always call GetPlacementInfo prior to calling a PlaceBet. Did you call GetPlacementInfo before calling PlaceBet? If not, please do so. ', u'Code': -1, u'Result': {u'PlacementData': [{u'Bookie': u''}], u'Message': None, u'BetPlacementReference': None}}
+   def PlaceBet(self, GameId, GameType, IsFullTime, MarketTypeId, oddsName, AcceptChangedOdds, bookieOdds, amount):
       """
       Método que faz a aposta.
       
@@ -297,7 +302,7 @@ class Bot(object):
                                     "OddsName":oddsName,
                                     "SportsType":SPORTS_TYPE_SOCCER,
                                     "AcceptChangedOdds":CHANGE_ODDS_YES,
-                                    #"BookieOdds":bookieOdds,    #Para todos os bookies não precisa passar o paremtro
+                                    "BookieOdds":bookieOdds,    
                                     "Amount":amount}
       , method='POST'                              
       , headers={'AOToken': self.AOToken} )   
@@ -314,7 +319,8 @@ class Bot(object):
             amount: quantidade a ser apostada.
             
       """
-      return self.PlaceBet(jogo.GameId,GAME_TYPE_HANDCAP, IS_FULL_TIME if jogo.etapa=='2H' else IS_NOT_FULL_TIME, MARKETTYPE_LIVE, 'FullTimeHdp' if  jogo.etapa=='2H' else 'HalfTimeHdp', CHANGE_ODDS_YES, 5.00   )
+      if selecao not in [1,-1]: return {}
+      return self.PlaceBet(jogo.GameId,GAME_TYPE_HANDCAP, IS_FULL_TIME if jogo.etapa=='2H' else IS_NOT_FULL_TIME, MARKETTYPE_LIVE, 'HomeOdds' if  selecao==1 else 'AwayOdds', CHANGE_ODDS_YES,jogo.BookieOdds_BEST.split(',')[selecao-1], 5  )
       
    def __init__(self):
       """
