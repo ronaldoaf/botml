@@ -267,7 +267,17 @@ class Bot(object):
             if (stat['home']==matches[i]['Home_totalcorner'] and stat['away']==matches[i]['Away_totalcorner']): matches[i]['stats']=stat   				 
       return matches  
 
-   def UpateJogos(self):
+   def UpdateJogos(self):
+      """
+      Método que atualiza os jogos.
+      Ele chama o GetMatchesTotalcorner. Cria uma lista de objetos tipo Jogo. 
+      Retira os jogos que não tem o atributo tempo (ou seja, não são partidas em andamento).
+      Retira os jogos que não tem atributo AH_home.
+      Coloca tudo isso no atributo Jogos do Objeto Bot.
+      
+      Args:
+         Não há parâmetros. Ele meio que já sabe o que fazer.
+      """
       Jogos=[Jogo(feed) for feed in self.GetMatchesTotalcorner()]
       Jogos=[jogo for jogo in Jogos if hasattr(jogo, 'tempo') ]
       self.Jogos=[jogo for jogo in Jogos if jogo.AH_home!='' ]
@@ -314,7 +324,7 @@ class Bot(object):
          selecao: 2 aposta no away
       
       Args:
-            jogo é objeto do tipo Jogoo
+            jogo é objeto do tipo Jogo
 
             amount: quantidade a ser apostada.
             
@@ -336,4 +346,4 @@ class Bot(object):
 
       self.LoginAndRegister()
 
-      self.UpateJogos()
+      self.UpdateJogos()
