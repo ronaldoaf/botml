@@ -87,17 +87,16 @@ class Jogo(object):
 
 class Bot(API):
    """
+     Classe que aplica o API da AsianOdds88 e contém metodos devirados da Classe API
      
      Atributos: 
        username: Nome de usuário para acessar o WebService
        password: Senha para acessar o WebService
      
-     Constantes:
-       SPORTS_TYPE_SOCCER: Esporte alvo no caso é o futebol. = 1.
-       MARKETTYPE_LIVE: Mercado alvo é o ao vivo. = 0.
    """
    username='webapiuser40'
    password='b59c5d190b12d5b7fa3b425aa69dcb8d'
+   
    global SPORTS_TYPE_SOCCER
    global MARKETTYPE_LIVE
    global MARKETTYPE_TODAY

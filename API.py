@@ -3,14 +3,7 @@ import requests
 
 class API(object):
    """
-     
-     Atributos: 
-       username: Nome de usuário para acessar o WebService
-       password: Senha para acessar o WebService
-     
-     Constantes:
-       SPORTS_TYPE_SOCCER: Esporte alvo no caso é o futebol. = 1.
-       MARKETTYPE_LIVE: Mercado alvo é o ao vivo. = 0.
+      Classe que acessar o API da AsianOdds88
    """
 
    global SPORTS_TYPE_SOCCER
@@ -25,7 +18,7 @@ class API(object):
    global GAME_TYPE_1X2GAME
    global CHANGE_ODDS_YES 
    global CHANGE_ODDS_NO
-
+   global FIRST_ITEM
    
 
    SPORTS_TYPE_SOCCER = 1 # 1 = Futebol. 2 = Basquete, etc...
@@ -40,7 +33,7 @@ class API(object):
    GAME_TYPE_1X2GAME = "X" #1X2game
    CHANGE_ODDS_YES = 1 #meaning that lower odds will be automatically accepted
    CHANGE_ODDS_NO = 0 #reject if the odds became lower
-   
+   FIRST_ITEM = 0
    
    def API(self,command, method='GET', params={}, headers={}):
      """
@@ -118,7 +111,7 @@ class API(object):
          Não há parâmetros. Ele meio que já sabe o que fazer.
        
       """
-      FIRST_ITEM = 0
+      
       return self.API('GetFeeds',  params={'sportsType': SPORTS_TYPE_SOCCER, 'marketTypeId': MARKETTYPE_LIVE, 'oddsFormat': ODDSFORMAT_DECIMAL }, headers={'AOToken': self.AOToken} )['Sports'][FIRST_ITEM]['MatchGames']
   
    
@@ -126,16 +119,18 @@ class API(object):
    def GetBets(self):
       return self.API('GetBets',headers={'AOToken': self.AOToken} )  
    
+   def GetPlacementInfo(self,GameId, IsFullTime,OddsName, GameType=GAME_TYPE_HANDCAP ):
+      return self.API('GetPlacementInfo',  method='POST', params={'GameId': GameId, 'GameType': GameType, 'IsFullTime': IsFullTime, 'Bookies': 'IBC,SBO,SIN,PIN,ISN,GA', 'OddsName': OddsName, 'OddsFormat': ODDSFORMAT_DECIMAL, 'SportsType': SPORTS_TYPE_SOCCER }, headers={'AOToken': self.AOToken} )
    
    
    #{u'Message': u'Bet has not been placed as an error occured.  Note : You must always call GetPlacementInfo prior to calling a PlaceBet. Did you call GetPlacementInfo before calling PlaceBet? If not, please do so. ', u'Code': -1, u'Result': {u'PlacementData': [{u'Bookie': u''}], u'Message': None, u'BetPlacementReference': None}}
-   def PlaceBet(self, GameId, GameType, IsFullTime, MarketTypeId, oddsName, AcceptChangedOdds, bookieOdds, amount):
+   def PlaceBet(self, GameId,  IsFullTime, OddsName, BookieOdds, Amount, GameType=GAME_TYPE_HANDCAP,  MarketTypeId=MARKETTYPE_LIVE):
       """
       Método que faz a aposta.
       
       Args:
             oddsName: pode ser 'AwayOdds', 'HomeOdds', ou 'DrawOdds' em mercados 1x2.
-            Qual é o tipo de odds a ser apostado "ISN:-0.84,SBO:-0.75,.."
+            Qual é o tipo de odds a ser apostado 'ISN:-0.84,SBO:-0.75,..'
             amount: quantidade a ser apostada.
          
       """
@@ -147,11 +142,11 @@ class API(object):
                                     "IsFullTime":IsFullTime,
                                     'MarketTypeId':MarketTypeId,
                                     "OddsFormat": ODDSFORMAT_DECIMAL, #optional parameter
-                                    "OddsName":oddsName,
+                                    "OddsName":OddsName,
                                     "SportsType":SPORTS_TYPE_SOCCER,
                                     "AcceptChangedOdds":CHANGE_ODDS_YES,
-                                    "BookieOdds":bookieOdds,    
-                                    "Amount":amount}
+                                    "BookieOdds":BookieOdds,    
+                                    "Amount":Amount}
       , method='POST'                              
       , headers={'AOToken': self.AOToken} )   
       

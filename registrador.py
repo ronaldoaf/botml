@@ -14,30 +14,42 @@ print "AOKey= ", bot.AOKey
 print "AOToken=", bot.AOToken
 print "Bot logado?=", bot.IsLoggedIn()
 
+
+pp.pprint(bot.GetPlacementInfo( GameId=819622878, IsFullTime=1,OddsName='HomeOdds') )
+
+#PlaceBet(self, GameId,  IsFullTime, MarketTypeId, OddsName, BookieOdds, Amount, GameType=GAME_TYPE_HANDCAP)
+pp.pprint(bot.PlaceBet( GameId=819622878, IsFullTime=1,OddsName='HomeOdds', BookieOdds='SIN:1.76', Amount=7) )
+
+
 api_url='https://webapi.asianodds88.com/AsianOddsService/'
 command='PlaceBet'
-params={'GameId':130721120,
+params={'GameId':1482400126,
 	'GameType': 'H',
 	'IsFullTime': 1,
 	'MarketTypeId': 0,
 	'OddsFormat': '00',
-	'OddsName': 'AwayOdds',
+	'OddsName': 'HomeOdds',
 	'SportsType': 1,
-	'Amount':5,
-	'BookieOdds':'SIN:2.480' }
+	'Amount':7,
+	'BookieOdds':'SIN:1.85' }
 	
 headers={'AOToken': bot.AOToken} 
-	
-print requests.post(api_url + command, json=params,   headers=headers).json()
 
-quit()
+
+
+
+
+	
+#print requests.post(api_url + command, json=params,   headers=headers).json()
+
+#quit()
 
 
 #pp.pprint(  bot.PlaceBet(1035445197,'H',1, 0,  )    )
 
 #print bot.Jogos[0].tempo, bot.Jogos[0].home
-#for jogo in bot.Jogos:
-#	print jogo.GameId, "'"+jogo.home+"'",jogo.etapa, jogo.tempo, jogo.AH_home, jogo.AH_away, jogo.ind, jogo.ind2, jogo.gH, jogo.gA, '|', jogo.EvaluateGame(), jogo.BookieOdds_BEST
+for jogo in bot.Jogos:
+	print jogo.GameId, "'"+jogo.home+"'",jogo.etapa, jogo.tempo, jogo.AH_home, jogo.AH_away, jogo.ind, jogo.ind2, jogo.gH, jogo.gA, '|', jogo.EvaluateGame(), jogo.BookieOdds_BEST
 #	if jogo.GameId==-276724192: pp.pprint( bot.ApostaEmHandicap(jogo,-1) )
 		#pp.pprint(jogo.feed)	
 pp.pprint( bot.GetBets() )
