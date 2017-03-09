@@ -157,7 +157,9 @@ class Bot(API):
       
 
       #Carrega os jogos do totalcorner que provem de um script do phantomjs que fica o rodando, gerando o arquivo a cada 1 minuto
-      with open('jogos_totalcorner.json') as data_file: jogos_totalcorner = json.load(data_file)  
+      #with open('jogos_totalcorner.json') as data_file: jogos_totalcorner = json.load(data_file)  
+      jogos_totalcorner=requests.get('http://bot365.ml/jogos_totalcorner.json').json()
+
 
       #Gera um dicionario cujas chaves são os distintos timestamps e o valores são listas com todos os jogos_totalcorner que começam nesses timestamps
       jogos_por_timestamp={}
