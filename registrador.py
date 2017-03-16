@@ -15,28 +15,14 @@ print "AOToken=", bot.AOToken
 print "Bot logado?=", bot.IsLoggedIn()
 
 
-pp.pprint(bot.GetPlacementInfo( GameId=819622878, IsFullTime=1,OddsName='HomeOdds') )
+pp.pprint(bot.GetPlacementInfo( GameId=-1919729884, IsFullTime=1,OddsName='HomeOdds') )
 
 #PlaceBet(self, GameId,  IsFullTime, MarketTypeId, OddsName, BookieOdds, Amount, GameType=GAME_TYPE_HANDCAP)
-pp.pprint(bot.PlaceBet( GameId=819622878, IsFullTime=1,OddsName='HomeOdds', BookieOdds='SIN:1.76', Amount=7) )
-
-
-api_url='https://webapi.asianodds88.com/AsianOddsService/'
-command='PlaceBet'
-params={'GameId':1482400126,
-	'GameType': 'H',
-	'IsFullTime': 1,
-	'MarketTypeId': 0,
-	'OddsFormat': '00',
-	'OddsName': 'HomeOdds',
-	'SportsType': 1,
-	'Amount':7,
-	'BookieOdds':'SIN:1.85' }
-	
-headers={'AOToken': bot.AOToken} 
+pp.pprint(bot.PlaceBet( GameId=-1919729884, IsFullTime=1,OddsName='HomeOdds', BookieOdds='IBC:1.960', Amount=10) )
 
 
 
+pp.pprint(bot.GetBalance() )
 
 
 	

@@ -223,7 +223,15 @@ class Bot(API):
       """
       if selecao not in [1,-1]: return {}
       return self.PlaceBet(jogo.GameId,GAME_TYPE_HANDCAP, IS_FULL_TIME if jogo.etapa=='2H' else IS_NOT_FULL_TIME, MARKETTYPE_LIVE, 'HomeOdds' if  selecao==1 else 'AwayOdds', CHANGE_ODDS_YES,jogo.BookieOdds_BEST.split(',')[selecao-1], 5  )
-      
+   
+   
+   def GetBalance(self):
+      """      
+      Método que o dinheiro em caixa e o investido no momento nas apostas em andamento      
+      """
+      sumario=self.GetAccountSummary()
+      return sumario['Credit']+sumario['Outstanding']
+
    def __init__(self):
       """
        Método __init__
