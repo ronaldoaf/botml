@@ -117,7 +117,7 @@ class API(object):
    
    
    def GetBets(self):
-      return self.API('GetBets',headers={'AOToken': self.AOToken} )  
+      return self.API('GetBets',headers={'AOToken': self.AOToken} )['Data']  
    
    def GetPlacementInfo(self,GameId, IsFullTime,OddsName, GameType=GAME_TYPE_HANDCAP ):
       return self.API('GetPlacementInfo',  method='POST', params={'GameId': GameId, 'GameType': GameType, 'IsFullTime': IsFullTime, 'Bookies': 'IBC,SBO,SIN,PIN,ISN,GA', 'OddsName': OddsName, 'OddsFormat': ODDSFORMAT_DECIMAL, 'SportsType': SPORTS_TYPE_SOCCER }, headers={'AOToken': self.AOToken} )
@@ -130,7 +130,7 @@ class API(object):
       
       Args:
             oddsName: pode ser 'AwayOdds', 'HomeOdds', ou 'DrawOdds' em mercados 1x2.
-            Qual é o tipo de odds a ser apostado 'ISN:-0.84,SBO:-0.75,..'
+            BookieOdds: 'ISN:1.84,SBO:1.75,..'
             amount: quantidade a ser apostada.
          
       """
@@ -144,7 +144,7 @@ class API(object):
                                     "OddsFormat": ODDSFORMAT_DECIMAL, #optional parameter
                                     "OddsName":OddsName,
                                     "SportsType":SPORTS_TYPE_SOCCER,
-                                    "AcceptChangedOdds":CHANGE_ODDS_YES,
+                                    #"AcceptChangedOdds":CHANGE_ODDS_YES,  #Obsoleto
                                     "BookieOdds":BookieOdds,    
                                     "Amount":Amount}
       , method='POST'                              

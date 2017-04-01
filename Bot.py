@@ -187,7 +187,7 @@ class Bot(API):
       stats=requests.get('http://aposte.me/live/stats.php').json() 
       for i in range(len( matches )):
          matches[i]['stats']={}
-         for stat in stats:	      
+         for stat in stats:
             if (stat['home']==matches[i]['Home_totalcorner'] and stat['away']==matches[i]['Away_totalcorner']): matches[i]['stats']=stat   				 
       return matches  
 
@@ -207,9 +207,7 @@ class Bot(API):
       self.Jogos=[jogo for jogo in Jogos if jogo.AH_home!='' ]
    
  
- 
-   
-   def ApostaEmHandicap(self, jogo, selecao):
+   def ApostarAH(self,jogo, selecao, valor):
       """
       Método que faz a aposta no Asian Handicap Live de acordo com a seleção
          selecao: 1 aposta no home
@@ -222,8 +220,22 @@ class Bot(API):
             
       """
       if selecao not in [1,-1]: return {}
-      return self.PlaceBet(jogo.GameId,GAME_TYPE_HANDCAP, IS_FULL_TIME if jogo.etapa=='2H' else IS_NOT_FULL_TIME, MARKETTYPE_LIVE, 'HomeOdds' if  selecao==1 else 'AwayOdds', CHANGE_ODDS_YES,jogo.BookieOdds_BEST.split(',')[selecao-1], 5  )
+      
+      IsFullTime=(IS_NOT_FULL_TIME if jogo.etapa=='1H' else IS_FULL_TIME)
+      OddsName=('HomeOdds' if  selecao==1 else 'AwayOdds')
+      
+      opcoes_de_apostas=sorted(self.GetPlacementInfo( GameId=jogo.GameId, IsFullTime=IsFullTime,OddsName=OddsName)['OddsPlacementData'], key=lambda x: -x['Odds'])
+      BookieOdds=','.join([e['Bookie']+':'+str(e['Odds']) for e in opcoes_de_apostas])
+      aposta_maxima=sum(e['MaximumAmount'] for e in opcoes_de_apostas)
+      if valor>aposta_maxima: valor=aposta_maxima
+      #return BookieOdds
+      #return self.PlaceBet(GameId=jogo.GameId,GAME_TYPE_HANDCAP, IS_FULL_TIME if jogo.etapa=='2H' else IS_NOT_FULL_TIME, MARKETTYPE_LIVE, 'HomeOdds' if  selecao==1 else 'AwayOdds', CHANGE_ODDS_YES,jogo.BookieOdds_BEST.split(',')[selecao-1], 5  )
+      return self.PlaceBet(jogo.GameId,  IsFullTime, OddsName, BookieOdds, valor)
    
+   def jaFoiApostadoAH(self,jogo):
+      for e in self.GetBets():
+         if ((e['GameType'],e['HomeName'],e['AwayName'],e['Term'])==('Handicap',jogo.home,jogo.away,('HT' if jogo.etapa=='1H' else 'FT') ) ) and (e['Status'] in ('Running','Pending')): return True
+      return False
    
    def GetBalance(self):
       """      
